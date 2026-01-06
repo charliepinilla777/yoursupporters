@@ -1,8 +1,11 @@
-﻿import { useMemo } from "react"
+﻿import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import GothicFrame from "../components/GothicFrame"
 import AppHeader from "../components/AppHeader"
-import { useDemoSession } from "../components/DemoSession"
+import Loading from "../components/Loading"
+import MediaLoading from "../components/MediaLoading"
+import { useAuth } from "../contexts/AuthContext"
+import { api, type Creator } from "../lib/api"
 
 const demoPosts = [
   { id: "p1", title: "Editorial Noir", locked: true, type: "foto" as const },
@@ -16,16 +19,56 @@ linear-gradient(180deg, rgba(255,255,255,0.05), transparent)`
 
 export default function CreatorProfile() {
   const { id } = useParams()
-  const { isSubscribedTo, subscribeTo, unsubscribeFrom } = useDemoSession()
+  const { user } = useAuth()
+  const [creator, setCreator] = useState<Creator | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [subscribed, setSubscribed] = useState(false)
 
-  const creatorName = useMemo(() => {
-    if (id === "c1") return "Luna Noir"
-    if (id === "c2") return "Vesper Aurea"
-    if (id === "c3") return "Morgana Velvet"
-    return "Creadora"
+  useEffect(() => {
+    if (id) {
+      loadCreator(id)
+    }
   }, [id])
 
-  const subscribed = isSubscribedTo(id ?? "")
+  const loadCreator = async (creatorId: string) => {
+    try {
+      setLoading(true)
+      const response = await api.getCreator(creatorId)
+      setCreator(response.creator)
+      setSubscribed(response.creator?.subscribers?.includes(user?._id || '') || false)
+    } catch (error) {
+      console.error('Error loading creator:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubscribe = async () => {
+    if (!id || !user) return
+    
+    try {
+      if (subscribed) {
+        await api.unsubscribe(id)
+        setSubscribed(false)
+      } else {
+        await api.subscribe(id)
+        setSubscribed(true)
+      }
+    } catch (error) {
+      console.error('Error updating subscription:', error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="screen">
+        <AppHeader title="PERFIL" />
+        <Loading text="CARGANDO" />
+      </div>
+    )
+  }
+
+  const creatorName = creator?.username || "Creadora"
 
   return (
     <div className="app-shell">
@@ -39,7 +82,7 @@ export default function CreatorProfile() {
 
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
             {!subscribed ? (
-              <button className="btn btn--primary" onClick={() => subscribeTo(id ?? "")}>
+              <button className="btn btn--primary" onClick={handleSubscribe}>
                 <div id="container-stars">
                   <div id="stars"></div>
                 </div>
@@ -47,10 +90,10 @@ export default function CreatorProfile() {
                   <div className="circle"></div>
                   <div className="circle"></div>
                 </div>
-                <strong>Suscribirme (demo)</strong>
+                <strong>Suscribirme</strong>
               </button>
             ) : (
-              <button className="btn btn--ghost" onClick={() => unsubscribeFrom(id ?? "")}>
+              <button className="btn btn--ghost" onClick={handleSubscribe}>
                 <div id="container-stars">
                   <div id="stars"></div>
                 </div>
@@ -58,7 +101,7 @@ export default function CreatorProfile() {
                   <div className="circle"></div>
                   <div className="circle"></div>
                 </div>
-                <strong>Cancelar suscripción (demo)</strong>
+                <strong>Cancelar suscripción</strong>
               </button>
             )}
             <Link to="/chat" className="btn" style={{ textDecoration: "none" }}>
@@ -103,6 +146,13 @@ export default function CreatorProfile() {
                       overflow: "hidden",
                     }}
                   >
+                    {/* Loading para contenido multimedia */}
+                    <MediaLoading 
+                      type={p.type === 'video' ? 'video' : 'image'} 
+                      size="small" 
+                      showAfter={800}
+                    />
+                    
                     <div
                       style={{
                         position: "absolute",

@@ -1,12 +1,11 @@
 ﻿import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
 import { api, type Creator } from "../lib/api"
 import GothicFrame from "../components/GothicFrame"
 import LanguageSwitcher from "../components/LanguageSwitcher"
+import Loading from "../components/Loading"
 
 export default function Explore() {
-  const { user } = useAuth()
   const [creators, setCreators] = useState<Creator[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -47,9 +46,7 @@ export default function Explore() {
           />
 
           {loading ? (
-            <div style={{ textAlign: "center", padding: 20 }}>
-              Cargando creadoras...
-            </div>
+            <Loading text="CARGANDO" />
           ) : creators.length === 0 ? (
             <div style={{ textAlign: "center", padding: 20 }}>
               No se encontraron creadoras
