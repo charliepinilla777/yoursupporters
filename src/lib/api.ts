@@ -1,6 +1,4 @@
-// API Configuration
-export const API_BASE_URL = 'http://localhost:3002/api';
-
+// DEMO DATA - Sin backend (solo para MVP)
 // Types
 export interface User {
   _id: string;
@@ -21,7 +19,9 @@ export interface User {
 
 export interface Creator {
   _id: string;
+  id: string;
   username: string;
+  name: string;
   profile: {
     bio?: string;
     instagram?: string;
@@ -32,6 +32,8 @@ export interface Creator {
   subscriptionPrice?: number;
   isSubscribed?: boolean;
   subscriberCount?: number;
+  tags?: string[];
+  followers?: number;
 }
 
 export interface Subscription {
@@ -58,63 +60,112 @@ export interface ChatMessage {
   receiver?: { username: string };
 }
 
-// API Functions
+// DEMO CREATORS DATA
+const DEMO_CREATORS: Creator[] = [
+  {
+    _id: 'c1',
+    id: 'c1',
+    username: 'luna_noir',
+    name: 'Luna Noir',
+    profile: {
+      bio: 'Fotografía gótica minimalista',
+      instagram: 'https://instagram.com/luna_noir',
+      x: 'https://x.com/luna_noir',
+      website: 'https://lunanoir.com'
+    },
+    verificationStatus: 'approved',
+    subscriptionPrice: 5,
+    isSubscribed: false,
+    subscriberCount: 1200,
+    tags: ['gótico', 'minimal', 'foto'],
+    followers: 1200
+  },
+  {
+    _id: 'c2',
+    id: 'c2',
+    username: 'vesper_aurea',
+    name: 'Vesper Aurea',
+    profile: {
+      bio: 'Arte digital barroco y edición de video',
+      instagram: 'https://instagram.com/vesper_aurea',
+      x: 'https://x.com/vesper_aurea',
+      website: 'https://vesperaurea.com'
+    },
+    verificationStatus: 'approved',
+    subscriptionPrice: 5,
+    isSubscribed: false,
+    subscriberCount: 890,
+    tags: ['barroco', 'video', 'arte'],
+    followers: 890
+  },
+  {
+    _id: 'c3',
+    id: 'c3',
+    username: 'morgana_velvet',
+    name: 'Morgana Velvet',
+    profile: {
+      bio: 'Fotografía fashion editorial noir',
+      instagram: 'https://instagram.com/morgana_velvet',
+      x: 'https://x.com/morgana_velvet',
+      website: 'https://morganavelvet.com'
+    },
+    verificationStatus: 'approved',
+    subscriptionPrice: 5,
+    isSubscribed: false,
+    subscriberCount: 2100,
+    tags: ['fashion', 'noir', 'editorial'],
+    followers: 2100
+  }
+];
+
+// API Functions - DEMO (sin backend real)
 export const api = {
   // Health check
-  health: () => fetch(`${API_BASE_URL}/health`).then(res => res.json()),
+  health: () => Promise.resolve({ ok: true }),
 
-  // Auth
+  // Auth (demo)
   register: (userData: { username: string; email: string; password: string; role?: string }) =>
-    fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
-    }).then(res => res.json()),
+    Promise.resolve({ success: true, user: userData }),
 
   login: (credentials: { email: string; password: string }) =>
-    fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials)
-    }).then(res => res.json()),
+    Promise.resolve({ success: true, user: { email: credentials.email } }),
 
-  // Creators
+  // Creators - DEMO DATA
   getCreators: (params?: { search?: string; page?: number; limit?: number }) => {
-    const query = new URLSearchParams(params as any).toString();
-    return fetch(`${API_BASE_URL}/users/creators${query ? '?' + query : ''}`)
-      .then(res => res.json());
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        let results = [...DEMO_CREATORS];
+        
+        if (params?.search) {
+          const search = params.search.toLowerCase();
+          results = results.filter(c =>
+            c.name.toLowerCase().includes(search) ||
+            c.tags?.some(t => t.toLowerCase().includes(search))
+          );
+        }
+
+        resolve({ data: results, total: results.length });
+      }, 300);
+    });
   },
 
   getCreator: (creatorId: string) =>
-    fetch(`${API_BASE_URL}/creators/${creatorId}`)
-      .then(res => res.json()),
+    Promise.resolve(DEMO_CREATORS.find(c => c.id === creatorId) || null),
 
-  // Subscriptions
+  // Subscriptions (demo)
   subscribe: (creatorId: string) =>
-    fetch(`${API_BASE_URL}/subscriptions/subscribe/${creatorId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    }).then(res => res.json()),
+    Promise.resolve({ success: true, message: 'Suscripción realizada' }),
 
   unsubscribe: (creatorId: string) =>
-    fetch(`${API_BASE_URL}/subscriptions/unsubscribe/${creatorId}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' }
-    }).then(res => res.json()),
+    Promise.resolve({ success: true, message: 'Suscripción cancelada' }),
 
   getMySubscriptions: () =>
-    fetch(`${API_BASE_URL}/subscriptions/my-subscriptions`)
-      .then(res => res.json()),
+    Promise.resolve({ data: [] }),
 
-  // Chat (placeholder for future implementation)
+  // Chat (demo)
   getChatHistory: (creatorId: string) =>
-    fetch(`${API_BASE_URL}/chat/messages/${creatorId}`)
-      .then(res => res.json()),
+    Promise.resolve({ data: [] }),
 
   sendMessage: (data: { creatorId: string; content: string; type?: string }) =>
-    fetch(`${API_BASE_URL}/chat/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(res => res.json())
+    Promise.resolve({ success: true, message: 'Mensaje enviado' })
 };
