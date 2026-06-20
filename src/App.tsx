@@ -1,10 +1,10 @@
-﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+﻿import { Routes, Route, Navigate } from "react-router-dom"
 import { AuthProvider } from "./contexts/AuthContext"
 import { useAuth } from "./contexts/AuthContext"
+import { DemoSessionProvider } from "./components/DemoSession"
 import AppHeader from "./components/AppHeader"
 import BottomTabs from "./components/BottomTabs"
 import LanguageSwitcher from "./components/LanguageSwitcher"
-
 import Landing from "./pages/Landing"
 import Explore from "./pages/Explore"
 import CreatorProfile from "./pages/CreatorProfile"
@@ -13,7 +13,6 @@ import CreatorDashboard from "./pages/CreatorDashboard"
 
 function AppRoutes() {
   const { user } = useAuth();
-
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -29,7 +28,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
+      <DemoSessionProvider>
         <div className="app-shell">
           <AppHeader title="Super Hot" />
           <main className="main-content">
@@ -38,7 +37,7 @@ export default function App() {
           <BottomTabs />
           <LanguageSwitcher />
         </div>
-      </Router>
+      </DemoSessionProvider>
     </AuthProvider>
   );
 }
