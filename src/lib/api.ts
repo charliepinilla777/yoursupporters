@@ -1,4 +1,4 @@
-// DEMO DATA - Sin backend (solo para MVP)
+﻿// DEMO DATA - Sin backend (solo para MVP)
 // Types
 export interface User {
   _id: string;
@@ -125,10 +125,34 @@ export const api = {
 
   // Auth (demo)
   register: (userData: { username: string; email: string; password: string; role?: string }) =>
-    Promise.resolve({ success: true, user: userData }),
+    Promise.resolve({
+      success: true,
+      error: undefined as string | undefined,
+      token: 'demo-token',
+      user: {
+        _id: 'u_' + Date.now(),
+        username: userData.username,
+        email: userData.email,
+        role: (userData.role as User['role']) || 'user',
+        verificationStatus: 'pending' as const,
+        profile: {},
+      } as User,
+    }),
 
   login: (credentials: { email: string; password: string }) =>
-    Promise.resolve({ success: true, user: { email: credentials.email } }),
+    Promise.resolve({
+      success: true,
+      error: undefined as string | undefined,
+      token: 'demo-token',
+      user: {
+        _id: 'u_demo',
+        username: credentials.email.split('@')[0],
+        email: credentials.email,
+        role: 'user' as const,
+        verificationStatus: 'pending' as const,
+        profile: {},
+      } as User,
+    }),
 
   // Creators - DEMO DATA
   getCreators: (params?: { search?: string; page?: number; limit?: number }) => {
@@ -153,19 +177,19 @@ export const api = {
     Promise.resolve(DEMO_CREATORS.find(c => c.id === creatorId) || null),
 
   // Subscriptions (demo)
-  subscribe: (creatorId: string) =>
+  subscribe: (_creatorId: string) =>
     Promise.resolve({ success: true, message: 'Suscripción realizada' }),
 
-  unsubscribe: (creatorId: string) =>
+  unsubscribe: (_creatorId: string) =>
     Promise.resolve({ success: true, message: 'Suscripción cancelada' }),
 
   getMySubscriptions: () =>
-    Promise.resolve({ data: [] }),
+    Promise.resolve({ data: [] as Subscription[] }),
 
   // Chat (demo)
-  getChatHistory: (creatorId: string) =>
+  getChatHistory: (_creatorId: string) =>
     Promise.resolve({ data: [] }),
 
-  sendMessage: (data: { creatorId: string; content: string; type?: string }) =>
+  sendMessage: (_data: { creatorId: string; content: string; type?: string }) =>
     Promise.resolve({ success: true, message: 'Mensaje enviado' })
 };

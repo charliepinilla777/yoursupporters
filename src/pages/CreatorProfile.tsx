@@ -34,8 +34,8 @@ export default function CreatorProfile() {
     try {
       setLoading(true)
       const response = await api.getCreator(creatorId)
-      setCreator(response.creator)
-      setSubscribed(response.creator?.subscribers?.includes(user?._id || '') || false)
+      setCreator(response)
+      setSubscribed(response?.isSubscribed || false)
     } catch (error) {
       console.error('Error loading creator:', error)
     } finally {

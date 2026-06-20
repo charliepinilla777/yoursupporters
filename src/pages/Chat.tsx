@@ -25,10 +25,10 @@ export default function Chat() {
     try {
       setLoading(true)
       const response = await api.getMySubscriptions()
-      setSubscriptions(response.subscriptions || [])
-      setSelected(response.subscriptions?.[0]?.creatorId || "")
+      setSubscriptions(response.data || [])
+      setSelected(response.data?.[0]?.creatorId || "")
       // Cargar mensajes iniciales
-      if (response.subscriptions?.[0]?.creatorId) {
+      if (response.data?.[0]?.creatorId) {
         loadMessages()
       }
     } catch (error) {
