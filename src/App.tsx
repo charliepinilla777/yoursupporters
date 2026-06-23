@@ -10,6 +10,8 @@ import Explore from "./pages/Explore"
 import CreatorProfile from "./pages/CreatorProfile"
 import Chat from "./pages/Chat"
 import CreatorDashboard from "./pages/CreatorDashboard"
+import Videos from "./pages/Videos"
+import Photos from "./pages/Photos"
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -17,9 +19,11 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/explore" element={<Explore />} />
-      <Route path="/chat" element={user ? <Chat /> : <Navigate to="/" replace />} />
+      <Route path="/chat" element={<Chat />} />
       <Route path="/creator/:id" element={<CreatorProfile />} />
       <Route path="/dashboard" element={user ? <CreatorDashboard /> : <Navigate to="/" replace />} />
+      <Route path="/videos" element={<Videos />} />
+      <Route path="/photos" element={<Photos />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

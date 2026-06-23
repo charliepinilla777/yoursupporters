@@ -39,3 +39,22 @@ strokeLinecap="round" />
     </svg>
   )
 }
+
+export function IconPlay(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <polygon fill="currentColor" stroke="none" points="10,8 16,12 10,16" />
+    </svg>
+  )
+}
+
+export function IconPhoto(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none" />
+      <polyline points="21,15 16,10 5,21" />
+    </svg>
+  )
+}
